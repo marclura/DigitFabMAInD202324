@@ -5,7 +5,9 @@ Board used: ML042
 
 Upload it via the Arduino IDE.
 
-Choose the board type "ESP32 Wrover Module".
+Install the ESP32-BLE-Keyboard library https://github.com/T-vK/ESP32-BLE-Keyboard
 
-Upload the code.
+Choose the board type "ESP32 Wrover Module"
+
+Upload the code
 
