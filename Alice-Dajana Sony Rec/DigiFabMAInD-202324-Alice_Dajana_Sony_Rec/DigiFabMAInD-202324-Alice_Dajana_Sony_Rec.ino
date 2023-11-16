@@ -34,7 +34,6 @@ struct Interface {
 };
 
 Interface elements[] {
-  {"board_led", 23, false, 'a', 0},
   {"rec", 13, 'R', true, 'd', 0},
   {"stop", 27, 'S', true, 'd', 0},
   {"translate", 26, 'T', true, 'd', 0},
@@ -51,10 +50,13 @@ String old_pressed_item = "";
 
 void setup() {
 
+  // serial USB communication
   Serial.begin(115200);
 
-  bleKeyboard.setName("Sony Rec - Alice and Dajane");
+  // keyboard setup
+  bleKeyboard.setName("Sony Rec A+D");  // name of the device not too long else iOS won't see it
   bleKeyboard.begin();
+
   delay(500);
 
   Serial.println("STARTED: Sony Rec - Alice and Dajane");
@@ -68,7 +70,8 @@ void setup() {
     else pinMode(elements[i].pin, OUTPUT);
   }
 
-  // switch on the board led
+  // switch on the led on the board
+  pinMode(23, OUTPUT);
   analogWrite(23, 50);
 
 }
