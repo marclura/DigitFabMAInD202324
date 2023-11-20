@@ -16,36 +16,27 @@
  * http://marcolurati.ch
  *
  *
- * Required libraries https://github.com/T-vK/ESP32-BLE-Keyboard
+ * Required libraries:
+ * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
+ * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  *
  */
 
 #include <BleKeyboard.h>
+#include <ML042FigmaLib.h>
+
 
 BleKeyboard bleKeyboard;
 
-struct Interface {
-  String name;
-  byte pin;
-  char key;
-  bool input; // true: input, false: output
-  char type;  // 'd': digital, 'a': analog
-  int value;
-};
+// buttons
+FigmaButton rec(13, 'R');
+FigmaButton stop(27, 'S');
+FigmaButton translate(26, 'T');
+FigmaButton share(33, 's');
 
-Interface elements[] {
-  {"rec", 13, 'R', true, 'd', 0},
-  {"stop", 27, 'S', true, 'd', 0},
-  {"translate", 26, 'T', true, 'd', 0},
-  {"length", 22, 'L', true, 'a', 0},
-  {"share", 33, 's', true, 'd', 0},
-  {"scroll", 25, 'C', true, 'a', 0}
-};
-
-byte elements_count = 0;  // amount of elements in the elements[] array
-
-String pressed_item = "";
-String old_pressed_item = "";
+// potentiometers
+FigmaPot scroll(6, 4, 100);
+FigmaPot length(2, 4, 100);
 
 
 void setup() {
@@ -59,47 +50,16 @@ void setup() {
 
   delay(500);
 
-  Serial.println("STARTED: Sony Rec - Alice and Dajane");
-
-  // count elements
-  elements_count = sizeof(elements)/sizeof(elements[0]);
-
-  // pinout mode setup
-  for(byte i=0; i<elements_count; i++) {
-    if(elements[i].input) pinMode(elements[i].pin, INPUT);
-    else pinMode(elements[i].pin, OUTPUT);
-  }
-
-  // switch on the led on the board
-  pinMode(23, OUTPUT);
-  analogWrite(23, 50);
-
 }
 
 void loop() {
 
-  if(bleKeyboard.isConnected()) {
+  // update the buttons
+  rec.update();
+  stop.update();
+  translate.update();
+  share.update();
+  
 
-    for(byte i=0; i<elements_count; i++) {
-      if(elements[i].type == 'd') { // digital pins
-        if(digitalRead(elements[i].pin)) {
-          if(elements[i].value == 0) {
-            pressed_item = elements[i].name;  // detected press
-            Serial.print("Pressed: ");
-            Serial.println(pressed_item);
-            bleKeyboard.print(elements[i].key);
-          }
-          elements[i].value = 1;
-        }
-        else elements[i].value = 0;
-      }
-      else {  // analog pins
-        elements[i].value = analogRead(elements[i].pin);
-      }
-    }
-
-    delay(20);
-
-  }
 
 }
