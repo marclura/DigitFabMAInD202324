@@ -25,8 +25,14 @@
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
 
-
 BleKeyboard bleKeyboard;
+
+// buttons
+FigmaButton play_pause(13, ' ');
+
+// potentiometers
+FigmaPot speed(2);  // movement speed
+FigmaPot volume(4); // audio volume
 
 void setup() {
 
@@ -42,6 +48,9 @@ void setup() {
 }
 
 void loop() {
+
+  // update
+  play_pause.update();
 
 
 

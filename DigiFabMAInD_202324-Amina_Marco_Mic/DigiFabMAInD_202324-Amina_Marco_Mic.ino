@@ -25,8 +25,14 @@
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
 
-
 BleKeyboard bleKeyboard;
+
+// buttons
+FigmaButton rec(6, 'R');
+FigmaButton send(7, 'S');
+
+// potentiometer
+FigmaPot vibe(2, 2, 100); // 'U': polite -> unpolite, 'P': unpolite -> polite
 
 
 void setup() {
@@ -40,10 +46,28 @@ void setup() {
 
   delay(500);
 
+  // potentimeter setup
+  vibe.addPosition(1, 100, 'U');
+  vibe.addPosition(2, 3995, 'P');
+
 }
 
 void loop() {
 
+  // update buttons
+  rec.update();
+  send.update();
 
+  if(vibe.changed()) {
+    Serial.println("Vibe translation changed, key: " + String(vibe.key()));
+  }
+
+  if(rec.pressed()) {
+    Serial.println("Rec pressed, key: " + String(rec.key()));
+  }
+
+  if(rec.pressed()) {
+    Serial.println("Send pressed, key: " + String(send.key()));
+  }
 
 }
