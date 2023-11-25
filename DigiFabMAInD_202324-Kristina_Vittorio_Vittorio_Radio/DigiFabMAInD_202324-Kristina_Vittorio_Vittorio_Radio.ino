@@ -25,8 +25,16 @@
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
 
-
 BleKeyboard bleKeyboard;
+
+// buttons
+FigmaButton next(13, 'N');
+FigmaButton back(14, 'K');
+
+// potentiometer
+FigmaPot filter(2, 4, 100);
+FigmaPot volume(13, 4, 100);
+FigmaPot status(14, 3, 200);
 
 
 void setup() {
@@ -40,11 +48,49 @@ void setup() {
 
   delay(500);
 
+  // potentiometer mapping
+  filter.addPosition(1, 512, 'A');
+  filter.addPosition(2, 1536, 'B');
+  filter.addPosition(3, 2560, 'C');
+  filter.addPosition(4, 3584, 'D');
 
+  volume.addPosition(1, 512, '1');
+  volume.addPosition(2, 1536, '2');
+  volume.addPosition(3, 2560, '3');
+  volume.addPosition(4, 3584, '4');
+
+  status.addPosition(1, 682, 'P');  // podcast
+  status.addPosition(2, 2048, 'F'); // off
+  status.addPosition(3, 3412, 'R'); // loop/radio
 
 }
 
 void loop() {
 
+  // update
+  next.update();
+  back.update();
+
+  // status
+  // buttons
+  if(next.pressed()) {
+    Serial.println("Next pressed, key: " + String(next.key()));
+  }
+  if(back.pressed()) {
+    Serial.println("Back pressed, key: " + String(back.key()));
+  }
+
+  // potentiometer
+  if(filter.changed()) {
+    Serial.println("Filter changed, key: " + String(filter.key()));
+  }
+  if(volume.changed()) {
+    Serial.println("Volume changed, key: " + String(volume.key()));
+  }
+  if(status.changed()) {
+    Serial.println("Status changed, key: " + String(status.key()));
+  }
+
+  delay(5);
 
 }

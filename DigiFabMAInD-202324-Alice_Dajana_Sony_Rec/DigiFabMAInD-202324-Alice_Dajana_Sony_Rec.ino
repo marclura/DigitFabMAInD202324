@@ -35,8 +35,8 @@ FigmaButton translate(26, 'T');
 FigmaButton share(33, 's');
 
 // potentiometers
-FigmaPot scroll(6, 4, 100);
-FigmaPot length(2, 4, 100);
+FigmaPot scroll(6, 2, 800);
+FigmaPot length(2, 4, 200);
 
 
 void setup() {
@@ -50,6 +50,15 @@ void setup() {
 
   delay(500);
 
+  // potentiometer mapping
+  scroll.addPosition(1, 800, 'U');  // up
+  scroll.addPosition(2, 3295, 'D'); // down
+
+  length.addPosition(1, 512, '1');  // lenghts
+  length.addPosition(2, 1536, '2');
+  length.addPosition(3, 2560, '3');
+  length.addPosition(4, 3584, '4');
+
 }
 
 void loop() {
@@ -59,7 +68,29 @@ void loop() {
   stop.update();
   translate.update();
   share.update();
-  
 
+  // status
+  if(rec.pressed()) {
+    Serial.println("Rec pressed, key: " + String(rec.key()));
+  }
+  if(stop.pressed()) {
+    Serial.println("Stop pressed, key: " + String(stop.key()));
+  }
+  if(translate.pressed()) {
+    Serial.println("Translate pressed, key: " + String(translate.key()));
+  }
+  if(share.pressed()) {
+    Serial.println("Share pressed, key: " + String(share.key()));
+  }
+
+  // scroll potentiometer
+  if(scroll.changed()) {
+    Serial.println("Scroll active, key: " + String(scroll.key()));
+  }
+
+  // length potentiometer
+  if(length.changed()) {
+    Serial.println("Length changed, key: " + String(length.key()));
+  }
 
 }

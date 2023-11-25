@@ -76,6 +76,7 @@ void loop() {
   confirm.update();
   top_sensor.update();
   side_sensor.update();
+
   encoder_position = knob.read();
   
   // button
@@ -104,6 +105,6 @@ void loop() {
   // distance sensor, weight
   distance = distance_sensor.MeasureInCentimeters();
    
-
+  delay(5);
 
 }

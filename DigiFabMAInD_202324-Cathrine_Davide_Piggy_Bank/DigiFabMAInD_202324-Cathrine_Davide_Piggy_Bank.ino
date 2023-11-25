@@ -19,11 +19,13 @@
  * Required libraries:
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
+ * Encoder https://github.com/PaulStoffregen/Encoder
  *
  */
 
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
+#include <Encoder.h>
 
 
 BleKeyboard bleKeyboard;
@@ -39,7 +41,13 @@ FigmaPot goals(26, 5, 100);
 FigmaLightSensor card(13);  // card insertion, light sensor
 
 // encoder
-// tail, scroll through the characters
+Encoder tail(13, 14); // tail, scroll through the characters
+
+// variables
+char characters[] = {'1', '2', '3'};  // character's key
+byte character_index = 0;
+int32_t current_encoder_position = 0;
+int32_t old_encoder_position = 0;
 
 void setup() {
 
@@ -80,11 +88,32 @@ void loop() {
   // update light sensor
   card.update();
 
+  // update encoder position
+  current_encoder_position = tail.read();
+
   // status
   if(card.changed()) Serial.println("Card changed, key: " + String(card.key()));
   if(confirm.released()) Serial.println("Confrim changed, key: " + String(confirm.key()));
   if(money.changed()) Serial.println("Money changed, key: " + String(money.key()));
   if(goals.changed()) Serial.println("Goals changed, key: " + String(goals.key()));
+
+  // "tail" encoder management
+  if(current_encoder_position > old_encoder_position) { // cv turn
+    character_index++;
+    if(character_index > (sizeof(characters)/sizeof(characters[0]) - 1) ) {
+      character_index = 0;
+    }
+    Serial.println("Current character key: " + String(characters[character_index]));
+    old_encoder_position = current_encoder_position;
+  }
+  else if(current_encoder_position < old_encoder_position) {  // ccv turn
+    character_index--;
+    if(character_index < 0 ) {
+      character_index = sizeof(characters)/sizeof(characters[0]) - 1;
+    }
+    Serial.println("Current character key: " + String(characters[character_index]));
+    old_encoder_position = current_encoder_position;
+  }
 
   delay(5);
 
