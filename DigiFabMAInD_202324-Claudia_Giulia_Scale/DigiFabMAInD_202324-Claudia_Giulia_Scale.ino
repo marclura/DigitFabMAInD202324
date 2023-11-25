@@ -25,8 +25,13 @@
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
 
-
 BleKeyboard bleKeyboard;
+
+// light sensors
+FigmaLightSensor top_sensor(2);
+FigmaLightSensor side_sensor(4);
+
+// encoder
 
 
 void setup() {
@@ -40,9 +45,28 @@ void setup() {
 
   delay(500);
 
+  // sensor setup
+  top_sensor.triggerThreshold(2000, 200, '1', '0');
+  side_sensor.triggerThreshod(2000, 200, 'Y', 'N');
+
+
+
 }
 
 void loop() {
+
+  // update the values
+  top_sensor.update();
+  side_sensor.update();
+
+
+  // status
+  if(top_sensor.changed()) {
+    Serial.println("Top sensor changed, key: " + String(top_sensor.key));
+  }
+  if(side_sensor.changed()) {
+    Serial.println("Side sensor changed, key: " + String(side_sensor.key));
+  }
 
 
 }

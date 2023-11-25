@@ -28,7 +28,7 @@
 BleKeyboard bleKeyboard;
 
 // buttons
-FigmaButton play_pause(13, ' ');
+FigmaButton play_pause(13, 'P');
 
 // potentiometers
 FigmaPot speed(2);  // movement speed
