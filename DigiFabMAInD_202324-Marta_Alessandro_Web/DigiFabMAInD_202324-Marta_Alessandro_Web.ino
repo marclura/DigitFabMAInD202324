@@ -19,13 +19,13 @@
  * Required libraries:
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
- * Encoder https://github.com/PaulStoffregen/Encoder
+ * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  *
  */
 
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
-#include <Encoder.h>
+#include <ESP32Encoder.h>
 
 BleKeyboard bleKeyboard;
 
@@ -40,7 +40,7 @@ FigmaPot pot1(22, 4, 200);
 FigmaPot pot2(23, 4, 200);
 
 // encoder
-Encoder navigationEncoder(13, 14);
+ESP32Encoder navigationEncoder;
 
 
 // variables
@@ -71,6 +71,9 @@ void setup() {
   pot2.addPosition(3, 2560, '3');
   pot2.addPosition(4, 3584, '4');
 
+  // encoder
+  navigationEncoder.attachHalfQuad(4, 5);
+
 }
 
 void loop() {
@@ -81,7 +84,7 @@ void loop() {
   plus.update();
   minus.update();
 
-  encoder_position = navigationEncoder.read();
+  encoder_position = long(navigationEncoder.getCount()/2);
 
 
   // status
@@ -110,7 +113,7 @@ void loop() {
   // encoder
   if(old_encoder_position > encoder_position) { // click right
     Serial.println("Knob click to right, key: " + String(navigation_right));
-    old_encoder_position = encoder_position
+    old_encoder_position = encoder_position;
   }
   else if(old_encoder_position < encoder_position) {
     Serial.println("Knob click to left, key: " + String(navigation_left));
@@ -118,6 +121,5 @@ void loop() {
   }
 
   delay(5);
-
 
 }

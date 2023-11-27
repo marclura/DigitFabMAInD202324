@@ -20,14 +20,12 @@
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
- * Ultraonic distance sensor https://github.com/Seeed-Studio/Seeed_Arduino_UltrasonicRanger
  *
  */
 
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
 #include <ESP32Encoder.h>
-// #include <Ultrasonic.h>
 
 BleKeyboard bleKeyboard;
 
@@ -45,8 +43,8 @@ ESP32Encoder knob;
 // Ultrasonic distance_sensor(7);
 
 // variables
-int64_t old_encoder_position = 0;
-int64_t encoder_position = 0;
+int32_t old_encoder_position = 0;
+int32_t encoder_position = 0;
 char knob_right_click = 'R';
 char knob_left_click = 'L';
 long distance = 0;
@@ -79,7 +77,7 @@ void loop() {
   top_sensor.update();
   side_sensor.update();
 
-  encoder_position = knob.getCount()/2;
+  encoder_position = long(knob.getCount()/2);
   
   // button
   if(confirm.pressed()) {
@@ -95,7 +93,6 @@ void loop() {
   }
 
   // encoder
-
   if(old_encoder_position > encoder_position) { // click right
     Serial.println("Knob click to right, key: " + String(knob_right_click));
     old_encoder_position = encoder_position;
@@ -104,10 +101,6 @@ void loop() {
     Serial.println("Knob click to left, key: " + String(knob_left_click));
     old_encoder_position = encoder_position;
   }
-
-
-  // distance sensor, weight
-  // distance = distance_sensor.MeasureInCentimeters();
    
   delay(5);
 

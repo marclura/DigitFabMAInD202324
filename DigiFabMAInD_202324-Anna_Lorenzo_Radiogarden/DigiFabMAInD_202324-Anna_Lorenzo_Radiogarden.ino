@@ -19,12 +19,12 @@
  * Required libraries:
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
- * Encoder https://github.com/PaulStoffregen/Encoder
+ * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  */
 
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
-#include <Encoder.h>
+#include <ESP32Encoder.h>
 
 BleKeyboard bleKeyboard;
 
@@ -33,18 +33,19 @@ FigmaButton playButton(13, ' ');  // space key
 
 // potentiometers
 FigmaPot speedPot(2);  // movement speed
-FigmaPot volumePot(4); // audio volume
+FigmaPot volumePot(19); // audio volume
 
 // encoder
-Encoder directionEncoder(13, 14);
+ESP32Encoder directionEncoder;
 
 // variables
-byte encoder_clicks = 24; // clicks per tourn
+byte encoder_clicks = 20; // clicks per tourn
 int direction = 0;  // vector direction, 0-360 degrees
 int max_speed = 200;  // maimum speed
 int speed = 0;
 int volume = 0;
 int max_volume = 100; // %
+int32_t encoder_count = 0;
 
 void setup() {
 
@@ -57,6 +58,9 @@ void setup() {
 
   delay(500);
 
+  // encoder
+  directionEncoder.attachHalfQuad(5, 4);
+
 }
 
 void loop() {
@@ -64,9 +68,13 @@ void loop() {
   // update
   playButton.update();
 
+  encoder_count = long(directionEncoder.getCount()/2);
+
   // navigation vector
-  direction = directionEncoder.read() % encoder_clicks * 360 / encoder_clicks;  // 0-360 in 24 (encoder_clicks) increments, every increment is 360/24 = 15 degrees
+  direction = encoder_count % encoder_clicks * 360 / encoder_clicks;  // 0-360 in 24 (encoder_clicks) increments, every increment is 360/24 = 15 degrees
   speed = int(float(speedPot.getValue() / 4095) * max_speed);
+
+  Serial.println("direction: " + String(direction));
 
   // volume
   volume = int(float(volumePot.getValue() / 4095) * max_volume);
