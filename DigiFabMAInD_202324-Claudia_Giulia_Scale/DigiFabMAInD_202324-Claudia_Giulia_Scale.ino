@@ -19,7 +19,7 @@
  * Required libraries:
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
- * Encoder https://github.com/PaulStoffregen/Encoder
+ * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  * Ultraonic distance sensor https://github.com/Seeed-Studio/Seeed_Arduino_UltrasonicRanger
  *
  */
@@ -36,10 +36,10 @@ FigmaButton confirm(13, 'K');
 
 // light sensors
 FigmaLightSensor top_sensor(2);
-FigmaLightSensor side_sensor(4);
+FigmaLightSensor side_sensor(25);
 
 // encoder
-ESP32Encoder knob();
+ESP32Encoder knob;
 
 // ultrasonic distance sensor
 // Ultrasonic distance_sensor(7);
@@ -67,7 +67,8 @@ void setup() {
   side_sensor.triggerThreshold(2000, 200, 'Y', 'N');
 
   // encoder
-  knob.attachSingleEdge(4, 5);
+  knob.attachHalfQuad(4, 5);
+  knob.setCount(0);
 
 }
 
@@ -78,7 +79,7 @@ void loop() {
   top_sensor.update();
   side_sensor.update();
 
-  encoder_position = knob.getCount();
+  encoder_position = knob.getCount()/2;
   
   // button
   if(confirm.pressed()) {
@@ -94,7 +95,7 @@ void loop() {
   }
 
   // encoder
-  /*
+
   if(old_encoder_position > encoder_position) { // click right
     Serial.println("Knob click to right, key: " + String(knob_right_click));
     old_encoder_position = encoder_position;
@@ -103,7 +104,7 @@ void loop() {
     Serial.println("Knob click to left, key: " + String(knob_left_click));
     old_encoder_position = encoder_position;
   }
-  */
+
 
   // distance sensor, weight
   // distance = distance_sensor.MeasureInCentimeters();
