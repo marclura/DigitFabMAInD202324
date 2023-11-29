@@ -19,30 +19,49 @@
  * Required libraries:
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
+ * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
+ *
+ * Note:
+ * The key (char) for Figma has to be "lowercase" to work!!
  *
  */
 
 #include <BleKeyboard.h>
 #include <ML042FigmaLib.h>
+#include <ESP32Encoder.h>
 
 BleKeyboard bleKeyboard;
 
 // buttons
-FigmaButton tape1(4, '1');  // tape reader
-FigmaButton tape2(5, '2');
-FigmaButton tape3(6, '3');
+FigmaButton tape1(13, 'j');  // tape reader
+FigmaButton tape2(27, 'k');
+FigmaButton tape3(26, 'l');
 
-FigmaButton back(7, 'P'); // previous button
-FigmaButton next(8, 'N'); // next button
-FigmaButton enter(9, 'E');  // enter button
+FigmaButton back(2, 'a'); // previous button
+FigmaButton next(35, 'd'); // next button
 
 // switch
-FigmaSwitch transparency(6, 'A', 'B');
+FigmaSwitch transparency(33, 's', 'w');
 
+// encoder
+ESP32Encoder prompt1;
+ESP32Encoder prompt2;
 
 // variables
-char tape_removed = '0';
+int32_t current_prompt1 = 0;
+int32_t current_prompt2 = 0;
+int32_t old_current_prompt1 = 0;
+int32_t old_current_prompt2 = 0;
+
+char prompt1_right = 'v';
+char prompt1_left = 'b';
+
+char prompt2_right = 'n';
+char prompt2_left = 'm';
+
+char tape_removed = 'h';
 char old_tape_key = '_';
+
 
 void setup() {
 
@@ -57,6 +76,10 @@ void setup() {
 
   Serial.println("Transparency switch position: " + String(transparency.key()));
 
+  // encoder
+  prompt1.attachHalfQuad(5, 4);
+  prompt2.attachHalfQuad(19, 18);
+
 }
 
 void loop() {
@@ -67,26 +90,53 @@ void loop() {
   tape3.update();
   back.update();
   next.update();
-  enter.update();
 
   // switch update
   transparency.update();
+
+  // update encoder position
+  current_prompt1 = long(prompt1.getCount()/2);
+  current_prompt2 = long(prompt2.getCount()/2);
 
 
   // Transparency switch status
   if(transparency.changed()) {
     Serial.println("Transparency switch position changed: " + String(transparency.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(transparency.key());
   }
 
   // Interface
   if(back.pressed()) {
-    Serial.println("Back button pressed, key: " + String(back.key()));
+    Serial.println("Previous button pressed, key: " + String(back.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(back.key());
   }
   if(next.pressed()) {
     Serial.println("Next button pressed, key: " + String(next.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(next.key());
   }
-  if(enter.pressed()) {
-    Serial.println("Enter button pressed, key: " + String(enter.key()));
+
+  // Encoders
+  // Prompt1
+  if(current_prompt1 > old_current_prompt1) { // cv turn
+    Serial.println("Prompt1 encoder right: " + String(prompt1_right));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(prompt1_right);
+    old_current_prompt1 = current_prompt1;
+  }
+  if(current_prompt1 < old_current_prompt1) { // cvv turn
+    Serial.println("Prompt1 encoder left: " + String(prompt1_left));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(prompt1_left);
+    old_current_prompt1 = current_prompt1;
+  }
+  // Prompt2
+  if(current_prompt2 > old_current_prompt2) { // cv turn
+    Serial.println("Prompt2 encoder right: " + String(prompt2_right));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(prompt2_right);
+    old_current_prompt2 = current_prompt2;
+  }
+  if(current_prompt2 < old_current_prompt2) { // cvv turn
+    Serial.println("Prompt2 encoder left: " + String(prompt2_left));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(prompt2_left);
+    old_current_prompt2 = current_prompt2;
   }
 
 
