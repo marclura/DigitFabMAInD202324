@@ -31,7 +31,7 @@
 BleKeyboard bleKeyboard;
 
 // button
-FigmaButton confirm(22, 'C');  // confirmation (tail)
+FigmaButton confirm(22, 'S');  // confirmation (tail)
 
 // potentimeter
 FigmaPot money(2, 5, 100);  // key, positions, spread
@@ -44,10 +44,11 @@ FigmaLightSensor card(13);  // card insertion, light sensor
 ESP32Encoder tail; // tail, scroll through the characters
 
 // variables
-char characters[] = {'1', '2', '3'};  // character's key
 byte character_index = 0;
 int32_t current_encoder_position = 0;
 int32_t old_encoder_position = 0;
+char tail_cv = '0';
+char tail_ccv = '1';
 
 void setup() {
 
@@ -55,13 +56,13 @@ void setup() {
   Serial.begin(115200);
 
   // keyboard setup
-  bleKeyboard.setName("Piggy Bank - C+D");  // name of the device not too long else iOS won't see it
+  bleKeyboard.setName("PiggyBank C+D");  // name of the device not too long else iOS won't see it
   bleKeyboard.begin();
 
   delay(500);
 
   // light sensor mapping
-  card.triggerThreshold(3000, 200, '0', '1'); // threshold, spread, keyAbove, keyBelow
+  card.triggerThreshold(3000, 200, 'X', 'V'); // threshold, spread, keyAbove, keyBelow
 
 
   // potentiometer mapping
@@ -71,14 +72,15 @@ void setup() {
   money.addPosition(4, 2500, 'D'); // zero money to add, position, value, key
   money.addPosition(5, 3200, 'E'); // add money, position, value, key
 
-  goals.addPosition(1, 200, 'a'); // overview, position, value, key
-  goals.addPosition(2, 900, 'b'); // 1st goal, position, value, key
-  goals.addPosition(3, 1500, 'c'); // 2nd goal, position, value, key
-  goals.addPosition(4, 2500, 'd'); // 3rd goal, position, value, key
-  goals.addPosition(5, 3500, 'e'); // 4th goal, position, value, key
+  goals.addPosition(1, 200, 'F'); // overview, position, value, key
+  goals.addPosition(2, 900, 'G'); // 1st goal, position, value, key
+  goals.addPosition(3, 1500, 'H'); // 2nd goal, position, value, key
+  goals.addPosition(4, 2500, 'I'); // 3rd goal, position, value, key
+  goals.addPosition(5, 3500, 'L'); // 4th goal, position, value, key
 
   // encoder
   tail.attachHalfQuad(4, 5);
+  old_encoder_position = long(tail.getCount()/2);
 
 }
 
@@ -94,26 +96,38 @@ void loop() {
   current_encoder_position = long(tail.getCount()/2);
 
   // status
-  if(card.changed()) Serial.println("Card changed, key: " + String(card.key()));
-  if(confirm.released()) Serial.println("Confrim changed, key: " + String(confirm.key()));
-  if(money.changed()) Serial.println("Money changed, key: " + String(money.key()));
-  if(goals.changed()) Serial.println("Goals changed, key: " + String(goals.key()));
+
+  // light sensor
+  if(card.changed()) {
+    Serial.println("Card changed, key: " + String(card.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(card.key());
+  } 
+  
+  // button
+  if(confirm.released()) {
+    Serial.println("Confrim pressed, key: " + String(confirm.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(confirm.key());
+  } 
+  
+  // potentiometer
+  if(money.changed()) {
+    Serial.println("Money changed, key: " + String(money.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(money.key());
+  } 
+  if(goals.changed()) {
+    Serial.println("Goals changed, key: " + String(goals.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(goals.key());
+  }
 
   // "tail" encoder management
   if(current_encoder_position > old_encoder_position) { // cv turn
-    character_index++;
-    if(character_index > (sizeof(characters)/sizeof(characters[0]) - 1) ) {
-      character_index = 0;
-    }
-    Serial.println("Current character key: " + String(characters[character_index]));
+    Serial.println("Tail encoder CV: " + String(tail_cv));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(tail_cv);
     old_encoder_position = current_encoder_position;
   }
   else if(current_encoder_position < old_encoder_position) {  // ccv turn
-    character_index--;
-    if(character_index == 0 ) {
-      character_index = sizeof(characters)/sizeof(characters[0]) - 1;
-    }
-    Serial.println("Current character key: " + String(characters[character_index]));
+    Serial.println("Tail encoder CCV: " + String(tail_ccv));
+    if(bleKeyboard.isConnected()) bleKeyboard.print(tail_ccv);
     old_encoder_position = current_encoder_position;
   }
 
