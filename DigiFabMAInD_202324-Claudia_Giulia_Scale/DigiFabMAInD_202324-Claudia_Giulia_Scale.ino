@@ -21,6 +21,10 @@
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  *
+ *
+ * Note:
+ * The key (char) for Figma has to be "lowercase" to work!!
+ *
  */
 
 #include <BleKeyboard.h>
@@ -30,11 +34,11 @@
 BleKeyboard bleKeyboard;
 
 // button
-FigmaButton confirm(13, 'K');
+FigmaButton confirm(13, 'p');
 
 // light sensors
-FigmaLightSensor top_sensor(2);
-FigmaLightSensor side_sensor(25);
+FigmaLightSensor top_sensor(26);
+FigmaLightSensor side_sensor(33);
 
 // encoder
 ESP32Encoder knob;
@@ -45,8 +49,8 @@ ESP32Encoder knob;
 // variables
 int32_t old_encoder_position = 0;
 int32_t encoder_position = 0;
-char knob_right_click = 'R';
-char knob_left_click = 'L';
+char knob_right_click = 'r';
+char knob_left_click = 'l';
 long distance = 0;
 
 void setup() {
@@ -61,8 +65,8 @@ void setup() {
   delay(500);
 
   // sensor setup
-  top_sensor.triggerThreshold(2000, 200, '1', '0');
-  side_sensor.triggerThreshold(2000, 200, 'Y', 'N');
+  top_sensor.triggerThreshold(2000, 200, '0', '1');
+  side_sensor.triggerThreshold(2000, 200, 'e', 's');
 
   // encoder
   knob.attachHalfQuad(4, 5);
@@ -80,25 +84,30 @@ void loop() {
   encoder_position = long(knob.getCount()/2);
   
   // button
-  if(confirm.pressed()) {
+  if(confirm.released()) {
     Serial.println("Confrim button pressed, key: " + String(confirm.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(confirm.key());
   }
 
   // light sensor
   if(top_sensor.changed()) {
     Serial.println("Top sensor changed, key: " + String(top_sensor.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(top_sensor.key());
   }
   if(side_sensor.changed()) {
     Serial.println("Side sensor changed, key: " + String(side_sensor.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(side_sensor.key());
   }
 
   // encoder
   if(old_encoder_position > encoder_position) { // click right
     Serial.println("Knob click to right, key: " + String(knob_right_click));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(knob_right_click);
     old_encoder_position = encoder_position;
   }
   else if(old_encoder_position < encoder_position) {
     Serial.println("Knob click to left, key: " + String(knob_left_click));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(knob_left_click);
     old_encoder_position = encoder_position;
   }
    

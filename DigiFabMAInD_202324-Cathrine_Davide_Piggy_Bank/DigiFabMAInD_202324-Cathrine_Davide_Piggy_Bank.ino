@@ -21,6 +21,10 @@
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  *
+ *
+ * Note:
+ * The key (char) for Figma has to be "lowercase" to work!!
+ *
  */
 
 #include <BleKeyboard.h>
@@ -31,11 +35,11 @@
 BleKeyboard bleKeyboard;
 
 // button
-FigmaButton confirm(22, 'S');  // confirmation (tail)
+FigmaButton confirm(22, 's');  // confirmation (tail)
 
 // potentimeter
-FigmaPot money(2, 5, 100);  // key, positions, spread
-FigmaPot goals(26, 5, 100);
+FigmaPot money(26, 5, 100);  // key, positions, spread
+FigmaPot goals(2, 5, 100);
 
 // light sensor
 FigmaLightSensor card(13);  // card insertion, light sensor
@@ -62,21 +66,21 @@ void setup() {
   delay(500);
 
   // light sensor mapping
-  card.triggerThreshold(3000, 200, 'X', 'V'); // threshold, spread, keyAbove, keyBelow
+  card.triggerThreshold(3000, 200, 'x', 'v'); // threshold, spread, keyAbove, keyBelow
 
 
   // potentiometer mapping
-  money.addPosition(1, 200, 'A'); // total, position, value, key 
-  money.addPosition(2, 900, 'B'); // last goal, position, value, key
-  money.addPosition(3, 1500, 'C'); // money to be allocated, position, value, key
-  money.addPosition(4, 2500, 'D'); // zero money to add, position, value, key
-  money.addPosition(5, 3200, 'E'); // add money, position, value, key
+  money.addPosition(1, 200, 'a'); // total, position, value, key 
+  money.addPosition(2, 900, 'b'); // last goal, position, value, key
+  money.addPosition(3, 1500, 'c'); // money to be allocated, position, value, key
+  money.addPosition(4, 2500, 'd'); // zero money to add, position, value, key
+  money.addPosition(5, 3200, 'e'); // add money, position, value, key
 
-  goals.addPosition(1, 200, 'F'); // overview, position, value, key
-  goals.addPosition(2, 900, 'G'); // 1st goal, position, value, key
-  goals.addPosition(3, 1500, 'H'); // 2nd goal, position, value, key
-  goals.addPosition(4, 2500, 'I'); // 3rd goal, position, value, key
-  goals.addPosition(5, 3500, 'L'); // 4th goal, position, value, key
+  goals.addPosition(1, 200, 'f'); // overview, position, value, key
+  goals.addPosition(2, 900, 'g'); // 1st goal, position, value, key
+  goals.addPosition(3, 1500, 'h'); // 2nd goal, position, value, key
+  goals.addPosition(4, 2500, 'i'); // 3rd goal, position, value, key
+  goals.addPosition(5, 3500, 'l'); // 4th goal, position, value, key
 
   // encoder
   tail.attachHalfQuad(4, 5);
@@ -100,34 +104,34 @@ void loop() {
   // light sensor
   if(card.changed()) {
     Serial.println("Card changed, key: " + String(card.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(card.key());
+    if(bleKeyboard.isConnected()) bleKeyboard.write(card.key());
   } 
   
   // button
   if(confirm.released()) {
     Serial.println("Confrim pressed, key: " + String(confirm.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(confirm.key());
+    if(bleKeyboard.isConnected()) bleKeyboard.write(confirm.key());
   } 
   
   // potentiometer
   if(money.changed()) {
     Serial.println("Money changed, key: " + String(money.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(money.key());
+    if(bleKeyboard.isConnected()) bleKeyboard.write(money.key());
   } 
   if(goals.changed()) {
     Serial.println("Goals changed, key: " + String(goals.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(goals.key());
+    if(bleKeyboard.isConnected()) bleKeyboard.write(goals.key());
   }
 
   // "tail" encoder management
   if(current_encoder_position > old_encoder_position) { // cv turn
     Serial.println("Tail encoder CV: " + String(tail_cv));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(tail_cv);
+    if(bleKeyboard.isConnected()) bleKeyboard.write(tail_cv);
     old_encoder_position = current_encoder_position;
   }
   else if(current_encoder_position < old_encoder_position) {  // ccv turn
     Serial.println("Tail encoder CCV: " + String(tail_ccv));
-    if(bleKeyboard.isConnected()) bleKeyboard.print(tail_ccv);
+    if(bleKeyboard.isConnected()) bleKeyboard.write(tail_ccv);
     old_encoder_position = current_encoder_position;
   }
 
