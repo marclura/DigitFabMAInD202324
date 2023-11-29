@@ -42,6 +42,9 @@ FigmaPot vibe(26, 2, 100); // polite <-> unpolite
 // encoder
 ESP32Encoder navigate;
 
+// led
+FigmaLed led_rec(19);
+
 // variables
 int32_t old_navigate_position = 0;
 int32_t navigate_position = 0;
@@ -85,6 +88,7 @@ void loop() {
   }
   if(rec.pressed()) {
     Serial.println("Rec pressed, key: " + String(rec.key()));
+    led_rec.toggle();
   }
 
   // potentiometer
