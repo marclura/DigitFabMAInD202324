@@ -20,6 +20,9 @@
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  *
+ * Note:
+ * The key (char) for Figma has to be "lowercase" to work!!
+ *
  */
 
 #include <BleKeyboard.h>
@@ -31,7 +34,7 @@ BleKeyboard bleKeyboard;
 // buttons
 FigmaButton rec(13, 'R');
 FigmaButton stop(27, 'S');
-FigmaButton translate(26, 'T');
+FigmaButton del(26, 'T');
 FigmaButton share(33, 's');
 
 // potentiometers
