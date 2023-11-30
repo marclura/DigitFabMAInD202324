@@ -93,6 +93,7 @@ void loop() {
   // buttons
   if(confirm.pressed()) {
     Serial.println("Confirm pressed, key: " + String(confirm.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(confirm.key());
   }
   if(rec.pressed()) {
     Serial.println("Rec pressed, key: " + String(rec.key()));
@@ -102,17 +103,22 @@ void loop() {
   // potentiometer
   if(vibe.changed()) {
     Serial.println("Vibe translation changed, key: " + String(vibe.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(vibe.key());
   }
 
   // encoder
   // navigate
   if(old_navigate_position > navigate_position) { // click right
     Serial.println("Knob click to right, key: " + String(navigate_right_click));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(navigate_right_click);
     old_navigate_position = navigate_position;
   }
   else if(old_navigate_position < navigate_position) {
     Serial.println("Knob click to left, key: " + String(navigate_left_click));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(navigate_left_click);
     old_navigate_position = navigate_position;
   }
+
+  delay(5);
 
 }
