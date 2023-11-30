@@ -21,6 +21,18 @@
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  *
+ *
+ * Pinout:
+ *
+ * Add button: G27
+ * Remove button: G26
+ * Back button: G13
+ * Upload button: G2
+ * Enter button: G19
+ * Columns potentiometer: G33
+ * Html potentiometer: G35
+ * Navigation encoder: G5
+ *
  */
 
 #include <BleKeyboard.h>
@@ -30,24 +42,25 @@
 BleKeyboard bleKeyboard;
 
 // buttons
-FigmaButton share(1, 'S');
-FigmaButton back(3, 'B');
-FigmaButton plus(2, '+');
-FigmaButton minus(4, '-');
+FigmaButton add(27, 'a');
+FigmaButton rem(26, 'r');  // remove
+FigmaButton back(13, 'b');
+FigmaButton upload(2, ' ');
+FigmaButton enter(19, 'k');
 
 // potentiometer
-FigmaPot pot1(22, 4, 200);
-FigmaPot pot2(23, 4, 200);
+FigmaPot columns(33, 12, 40);
+FigmaPot html(35, 6, 100);
 
 // encoder
-ESP32Encoder navigationEncoder;
+ESP32Encoder navigation;
 
 
 // variables
 int32_t old_encoder_position = 0;
 int32_t encoder_position = 0;
-char navigation_left = 'L';
-char navigation_right = 'R';
+char navigation_left = 'j';
+char navigation_right = 'l';
 
 void setup() {
 
@@ -61,65 +74,91 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  pot1.addPosition(1, 512, '1');  // lenghts
-  pot1.addPosition(2, 1536, '2');
-  pot1.addPosition(3, 2560, '3');
-  pot1.addPosition(4, 3584, '4');
+  columns.addPosition(1, 170, 'q');
+  columns.addPosition(2, 512, 'w');
+  columns.addPosition(3, 853, 'e');
+  columns.addPosition(4, 1194, 'r');
+  columns.addPosition(5, 1536, 't');
+  columns.addPosition(6, 1877, 'y');
+  columns.addPosition(7, 2218, 'u');
+  columns.addPosition(8, 2560, 'i');
+  columns.addPosition(9, 2901, 'o');
+  columns.addPosition(10, 3243, 'p');
+  columns.addPosition(11, 3584, ']');
+  columns.addPosition(12, 3925, '[');
 
-  pot2.addPosition(1, 512, '1');  // lenghts
-  pot2.addPosition(2, 1536, '2');
-  pot2.addPosition(3, 2560, '3');
-  pot2.addPosition(4, 3584, '4');
+  html.addPosition(1, 341, '1');
+  html.addPosition(2, 1024, '2');
+  html.addPosition(3, 1707, '3');
+  html.addPosition(4, 2389, '4');
+  html.addPosition(5, 3072, '5');
+  html.addPosition(6, 3755, '6');
 
   // encoder
-  navigationEncoder.attachHalfQuad(4, 5);
+  navigation.attachHalfQuad(4, 5);
 
 }
 
 void loop() {
 
   // update
-  share.update();
+  add.update();
+  rem.update();
   back.update();
-  plus.update();
-  minus.update();
+  upload.update();
+  enter.update();
 
-  encoder_position = long(navigationEncoder.getCount()/2);
+  encoder_position = long(navigation.getCount()/2);
 
 
   // status
   // buttons
-  if(share.pressed()) {
-    Serial.println("Share button pressed, key: " + String(share.key()));
+  if(add.pressed()) {
+    Serial.println("Add button pressed, key: " + String(add.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(add.key());
+  }
+  if(rem.pressed()) {
+    Serial.println("Remove button pressed, key: " + String(rem.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(rem.key());
   }
   if(back.pressed()) {
     Serial.println("Back button pressed, key: " + String(back.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(back.key());
   }
-  if(plus.pressed()) {
-    Serial.println("Plus button pressed, key: " + String(plus.key()));
+  if(upload.pressed()) {
+    Serial.println("Upload button pressed, key: " + String(upload.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(upload.key());
   }
-  if(minus.pressed()) {
-    Serial.println("Minus button pressed, key: " + String(minus.key()));
+  if(enter.pressed()) {
+    Serial.println("Enter button pressed, key: " + String(enter.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(enter.key());
   }
 
   // potentiometers
-  if(pot1.changed()) {
-    Serial.println("Pot1 changed, key: " + String(pot1.key()));
+  if(columns.changed()) {
+    Serial.print("Columns changed, key: ");
+    Serial.println(columns.key());
+    if(bleKeyboard.isConnected()) bleKeyboard.write(columns.key());
   }
-  if(pot2.changed()) {
-    Serial.println("Pot2 changed, key: " + String(pot2.key()));
+  if(html.changed()) {
+    Serial.println("Html element changed, key: " + String(html.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(html.key());
   }
 
   // encoder
   if(old_encoder_position > encoder_position) { // click right
-    Serial.println("Knob click to right, key: " + String(navigation_right));
+    Serial.println("Navigation click to right, key: " + String(navigation_right));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(navigation_right);
     old_encoder_position = encoder_position;
+    delay(2);
   }
-  else if(old_encoder_position < encoder_position) {
-    Serial.println("Knob click to left, key: " + String(navigation_left));
+  else if(old_encoder_position < encoder_position) {  // click left
+    Serial.println("Navigation click to left, key: " + String(navigation_left));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(navigation_left);
     old_encoder_position = encoder_position;
+    delay(2);
   }
 
-  delay(5);
+  delay(1);
 
 }
