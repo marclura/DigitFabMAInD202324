@@ -23,6 +23,16 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ *
+ * Pinout:
+ *
+ * Recording button: G19
+ * Stop button: G5
+ * Share button: G2
+ * Length potentiometer: G27
+ * Delete button: G35
+ * Scroll potentiometer: G13
+ *
  */
 
 #include <BleKeyboard.h>
@@ -32,14 +42,14 @@
 BleKeyboard bleKeyboard;
 
 // buttons
-FigmaButton rec(13, 'R');
-FigmaButton stop(27, 'S');
-FigmaButton del(26, 'T');
-FigmaButton share(33, 's');
+FigmaButton rec(19, 'a');
+FigmaButton stop(5, 'b');
+FigmaButton share(2, 'm');
+FigmaButton del(35, 'f');
 
 // potentiometers
-FigmaPot scroll(6, 2, 800);
-FigmaPot length(2, 4, 200);
+FigmaPot scroll(13, 3, 200);
+FigmaPot length(27, 3, 200);
 
 
 void setup() {
@@ -54,13 +64,13 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  scroll.addPosition(1, 800, 'U');  // up
-  scroll.addPosition(2, 3295, 'D'); // down
+  scroll.addPosition(1, 800, 'e');  // up
+  scroll.addPosition(2, 2048, 'c');  // up
+  scroll.addPosition(3, 3295, 'd'); // down
 
-  length.addPosition(1, 512, '1');  // lenghts
-  length.addPosition(2, 1536, '2');
-  length.addPosition(3, 2560, '3');
-  length.addPosition(4, 3584, '4');
+  length.addPosition(1, 800, 'l');  // shorter
+  length.addPosition(2, 2048, 'g'); // neutral
+  length.addPosition(3, 3295, 'h'); // longer
 
 }
 
@@ -69,31 +79,38 @@ void loop() {
   // update the buttons
   rec.update();
   stop.update();
-  translate.update();
+  del.update();
   share.update();
 
   // status
+  // buttons
   if(rec.pressed()) {
     Serial.println("Rec pressed, key: " + String(rec.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(rec.key());
   }
   if(stop.pressed()) {
     Serial.println("Stop pressed, key: " + String(stop.key()));
-  }
-  if(translate.pressed()) {
-    Serial.println("Translate pressed, key: " + String(translate.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(stop.key());
   }
   if(share.pressed()) {
     Serial.println("Share pressed, key: " + String(share.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(share.key());
+  }
+  if(del.pressed()) {
+    Serial.println("Delete pressed, key: " + String(del.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(del.key());
   }
 
   // scroll potentiometer
   if(scroll.changed()) {
-    Serial.println("Scroll active, key: " + String(scroll.key()));
+    Serial.println("Scroll changed, key: " + String(scroll.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(scroll.key());
   }
 
   // length potentiometer
   if(length.changed()) {
     Serial.println("Length changed, key: " + String(length.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(length.key());
   }
 
 }
