@@ -24,6 +24,16 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ *
+ * Pinout:
+ *
+ * Next button: G33
+ * Back button: G35
+ * Filter potentiometer: G2
+ * Volume potentiometer: G13
+ * Status potentiometer: G27
+ * Cover light sensor: G26
+ *
  */
 
 #include <BleKeyboard.h>

@@ -24,6 +24,14 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ *
+ * Pinout:
+ * 
+ * Recording button: G27
+ * Confrim button: G13
+ * Vibe potentiometer: G26
+ * Recording LED: G19
+ *
  */
 
 #include <BleKeyboard.h>

@@ -25,6 +25,15 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ *
+ * Pinout:
+ *
+ * Confrim button: G22
+ * Money potentiometer: G26
+ * Goals potentiometer: G2
+ * Card light sensor: G13
+ * Tail encoder: G5
+ *
  */
 
 #include <BleKeyboard.h>
