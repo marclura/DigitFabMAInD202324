@@ -56,6 +56,8 @@ unsigned int scroll_threshold_up = 800;
 unsigned int scroll_threshold_down = 3295;
 char scroll_up_key = 'e';
 char scroll_down_key = 'd';
+char scroll_neutral_key = 'c';
+char scroll_last_key = ' ';
 
 // timing
 unsigned int scroll_interval = 500; // ms
@@ -110,19 +112,33 @@ void loop() {
   // scroll potentiometer
   if(scroll.getValue() < scroll_threshold_up) {
     if(millis() - last_scroll_press > scroll_interval) {
-      Serial.println("Scroll changed, key: " + String(scroll_up_key));
+      Serial.println("Scroll up, key: " + String(scroll_up_key));
       if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_up_key);
       last_scroll_press = millis();
+      scroll_last_key = scroll_up_key;
+    }
+  }
+  else if(scroll.getValue() > scroll_threshold_down) {
+    if(millis() - last_scroll_press > scroll_interval) {
+      Serial.println("Scroll down, key: " + String(scroll_down_key));
+      if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_down_key);
+      last_scroll_press = millis();
+      scroll_last_key = scroll_down_key;
+    }
+  }
+  else {
+    if(scroll_last_key != scroll_neutral_key) {
+      Serial.println("Scroll neutral, key: " + String(scroll_neutral_key));
+        if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_neutral_key);
+        scroll_last_key = scroll_neutral_key;
     }
   }
 
   // length potentiometer
-  if(length.getValue() > scroll_threshold_down) {
-    if(millis() - last_scroll_press > scroll_interval) {
-      Serial.println("Length changed, key: " + String(scroll_down_key));
-      if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_down_key);
+  if(length.changed()) {
+      Serial.println("Length changed, key: " + String(length.key()));
+      if(bleKeyboard.isConnected()) bleKeyboard.write(length.key());
       last_scroll_press = millis();
-    }
   }
 
 }
