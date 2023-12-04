@@ -17,7 +17,6 @@
  *
  *
  * Required libraries:
- * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  * ESP32Encoder https://github.com/madhephaestus/ESP32Encoder/
  * ESP32-BLE-Combo https://github.com/blackketter/ESP32-BLE-Combo
