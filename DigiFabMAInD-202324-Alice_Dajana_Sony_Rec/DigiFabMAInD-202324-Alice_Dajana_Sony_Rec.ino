@@ -51,6 +51,15 @@ FigmaButton del(35, 'f');
 FigmaPot scroll(13, 3, 200);
 FigmaPot length(27, 3, 200);
 
+// variables
+unsigned int scroll_threshold_up = 800;
+unsigned int scroll_threshold_down = 3295;
+char scroll_up_key = 'e';
+char scroll_down_key = 'd';
+
+// timing
+unsigned int scroll_interval = 500; // ms
+unsigned long last_scroll_press = 0;
 
 void setup() {
 
@@ -64,9 +73,6 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  scroll.addPosition(1, 800, 'e');  // up
-  scroll.addPosition(2, 2048, 'c');  // up
-  scroll.addPosition(3, 3295, 'd'); // down
 
   length.addPosition(1, 800, 'l');  // shorter
   length.addPosition(2, 2048, 'g'); // neutral
@@ -102,15 +108,21 @@ void loop() {
   }
 
   // scroll potentiometer
-  if(scroll.changed()) {
-    Serial.println("Scroll changed, key: " + String(scroll.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.write(scroll.key());
+  if(scroll.getValue() < scroll_threshold_up) {
+    if(millis() - last_scroll_press > scroll_interval) {
+      Serial.println("Scroll changed, key: " + String(scroll_up_key));
+      if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_up_key);
+      last_scroll_press = millis();
+    }
   }
 
   // length potentiometer
-  if(length.changed()) {
-    Serial.println("Length changed, key: " + String(length.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.write(length.key());
+  if(length.getValue() > scroll_threshold_down) {
+    if(millis() - last_scroll_press > scroll_interval) {
+      Serial.println("Length changed, key: " + String(scroll_down_key));
+      if(bleKeyboard.isConnected()) bleKeyboard.write(scroll_down_key);
+      last_scroll_press = millis();
+    }
   }
 
 }
