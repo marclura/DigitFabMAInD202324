@@ -24,6 +24,18 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ *
+ * Pinout:
+ * Tape limit switch 1: G13
+ * Tape limit switch 2: G27
+ * Tape limit switch 3: G26
+ * Back button: G2
+ * Next button: G35
+ * Transparency rocket switch: G33
+ * Prompt1 encoder: G5
+ * Prompt2 encoder: G19
+ *
+ *
  */
 
 #include <BleKeyboard.h>

@@ -25,6 +25,13 @@
  * Note:
  * The key (char) for Figma has to be "lowercase" to work!!
  *
+ * Pinout:
+ * 
+ * Confirm button: G13
+ * Top light sensor: G26
+ * Side light sensor: G33
+ * Knob encoder: G5
+ *
  */
 
 #include <BleKeyboard.h>

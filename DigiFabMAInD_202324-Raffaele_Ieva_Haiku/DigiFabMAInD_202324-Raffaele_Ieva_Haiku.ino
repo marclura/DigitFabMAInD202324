@@ -20,6 +20,21 @@
  * ESP32-BLE-Keyboard https://github.com/T-vK/ESP32-BLE-Keyboard
  * ML042_Figma_Lib https://github.com/marclura/ML042_Figma_Lib
  *
+ *
+ * Note:
+ * The key (char) for Figma has to be "lowercase" to work!!
+ *
+ *
+ * Pinout:
+ * 
+ * First verse buttons: G26, G25, G33
+ * Second verse buttons: G35, G34, G22
+ * Third verse buttons: G19, G18, G5
+ * Print button: G2
+ * Master potentiometer: G13
+ * Season potentiometer: G27
+ *
+ *
  */
 
 #include <BleKeyboard.h>
@@ -28,23 +43,23 @@
 BleKeyboard bleKeyboard;
 
 // buttons
-FigmaButton yellow1(4, '1');  // first row
-FigmaButton yellow2(5, '2');
-FigmaButton yellow3(12, '3');
+FigmaButton yellow1(26, '1');  // first row
+FigmaButton yellow2(25, '2');
+FigmaButton yellow3(33, '3');
 
-FigmaButton blue1(13, '4');  // second row
-FigmaButton blue2(14, '5');
-FigmaButton blue3(15, '6');
+FigmaButton blue1(35, '4');  // second row
+FigmaButton blue2(34, '5');
+FigmaButton blue3(22, '6');
 
-FigmaButton red1(17, '7');  // third row
+FigmaButton red1(19, '7');  // third row
 FigmaButton red2(18, '8');
-FigmaButton red3(19, '9');
+FigmaButton red3(5, '9');
 
-FigmaButton print(16, 'P'); // lever
+FigmaButton print(2, 'l'); // print lever
 
 // potentiometers
-FigmaPot season('2', 4, 100); // season selection, regular potentiometer
-FigmaPot author('13', 3, 100);  // author selection, linear potentiometer
+FigmaPot season(27, 4, 100); // season selection, regular potentiometer
+FigmaPot author(13, 4, 100);  // author selection, linear potentiometer
 
 void setup() {
 
@@ -58,14 +73,15 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  season.addPosition(1, 512, 'S');  // summer
-  season.addPosition(2, 1536, 'F'); // fall
-  season.addPosition(3, 2560, 'W'); // winter
-  season.addPosition(4, 3583, 'I'); // spring
+  season.addPosition(1, 512, 'a');  // spring
+  season.addPosition(2, 1536, 's'); // summer
+  season.addPosition(3, 2560, 'd'); // autumn
+  season.addPosition(4, 3583, 'w'); // winter
 
-  author.addPosition(1, 682, 'A');  // first author
-  author.addPosition(2, 2047, 'B'); // second author
-  author.addPosition(3, 3016, 'C'); // third author
+  author.addPosition(1, 512, 'v');  // first author, Basho
+  author.addPosition(2, 1536, 'b'); // second author, Buson
+  author.addPosition(3, 2560, 'n'); // third author, Issa
+  author.addPosition(4, 3583, 'm'); // third author, Shiki
 
 }
 
@@ -87,41 +103,53 @@ void loop() {
   // button pressed check
   if(yellow1.pressed()) {
     Serial.println("Button yellow1 pressed, key: " + String(yellow1.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(yellow1.key());
   }
   if(yellow2.pressed()) {
     Serial.println("Button yellow2 pressed, key: " + String(yellow2.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(yellow2.key());
   }
   if(yellow3.pressed()) {
     Serial.println("Button yellow3 pressed, key: " + String(yellow3.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(yellow3.key());
   }
   if(blue1.pressed()) {
     Serial.println("Button blue1 pressed, key: " + String(blue1.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(blue1.key());
   }
   if(blue2.pressed()) {
     Serial.println("Button blue2 pressed, key: " + String(blue2.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(blue2.key());
   }
   if(blue3.pressed()) {
     Serial.println("Button blue3 pressed, key: " + String(blue3.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(blue3.key());
   }
   if(red1.pressed()) {
     Serial.println("Button red1 pressed, key: " + String(red1.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(red1.key());
   }
   if(red2.pressed()) {
     Serial.println("Button red2 pressed, key: " + String(red2.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(red2.key());
   }
   if(red3.pressed()) {
     Serial.println("Button red3 pressed, key: " + String(red3.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(red3.key());
   }
   if(print.pressed()) {
     Serial.println("Button print pressed, key: " + String(print.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(print.key());
   }
 
   // potentiometers change check
   if(season.changed()) {
     Serial.println("Season changed, key: " + String(season.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(season.key());
   }
   if(author.changed()) {
     Serial.println("Author changed, key: " + String(author.key()));
+    if(bleKeyboard.isConnected()) bleKeyboard.write(author.key());
   }
 
   delay(5);
