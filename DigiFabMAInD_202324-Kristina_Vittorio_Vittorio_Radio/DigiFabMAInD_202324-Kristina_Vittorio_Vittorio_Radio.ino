@@ -67,7 +67,7 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  volume.addPosition(1, 102, '1');
+  volume.addPosition(1, 102, '1'); //for the volume it doesn't matter the key value we are only checking the potentiometer position
   volume.addPosition(2, 307, '2');
   volume.addPosition(3, 512, '3');
   volume.addPosition(4, 717, '4');
@@ -91,6 +91,11 @@ void setup() {
   status.addPosition(1, 682, 'x');  // clock
   status.addPosition(2, 2048, 'y'); // podcast
   status.addPosition(3, 3412, 'z'); // random mode
+
+  filter.addPosition(1, 512, 'a');
+  filter.addPosition(2, 1536, 'b');
+  filter.addPosition(3, 2560, 'c');
+  filter.addPosition(4, 3584, 'd');
 
   // light sensor
   cover.triggerThreshold(2000, 100, 'k', 'l');
