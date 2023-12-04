@@ -40,6 +40,7 @@
 #include <ML042FigmaLib.h>
 
 BleKeyboard bleKeyboard;
+int oldVolume = 0;
 
 // buttons
 FigmaButton next(33, 'g');
@@ -47,7 +48,7 @@ FigmaButton back(35, 'h');
 
 // potentiometer
 FigmaPot filter(2, 4, 100);
-FigmaPot volume(13, 4, 100);
+FigmaPot volume(13, 20, 100);
 FigmaPot status(27, 3, 200);
 
 // Light sensor
@@ -66,19 +67,35 @@ void setup() {
   delay(500);
 
   // potentiometer mapping
-  filter.addPosition(1, 512, 'a');
-  filter.addPosition(2, 1536, 'b');
-  filter.addPosition(3, 2560, 'c');
-  filter.addPosition(4, 3584, 'd');
-
-  volume.addPosition(1, 512, '1');
-  volume.addPosition(2, 1536, '2');
-  volume.addPosition(3, 2560, '3');
-  volume.addPosition(4, 3584, '4');
+  volume.addPosition(1, 102, '1'); //for the volume it doesn't matter the key value we are only checking the potentiometer position
+  volume.addPosition(2, 307, '2');
+  volume.addPosition(3, 512, '3');
+  volume.addPosition(4, 717, '4');
+  volume.addPosition(5, 922, '5');
+  volume.addPosition(6, 1126, '6');
+  volume.addPosition(7, 1331, '7');
+  volume.addPosition(8, 1536, '8');
+  volume.addPosition(9, 1741, '9');
+  volume.addPosition(10, 1946, 'a');
+  volume.addPosition(11, 2150, 'b');
+  volume.addPosition(12, 2355, 'c');
+  volume.addPosition(13, 2560, 'd');
+  volume.addPosition(14, 2765, 'e');
+  volume.addPosition(15, 2970, 'f');
+  volume.addPosition(16, 3174, 'g');
+  volume.addPosition(17, 3379, 'h');
+  volume.addPosition(18, 3584, 'i');
+  volume.addPosition(19, 3789, 'm');
+  volume.addPosition(20, 3994, 'n');
 
   status.addPosition(1, 682, 'x');  // clock
   status.addPosition(2, 2048, 'y'); // podcast
   status.addPosition(3, 3412, 'z'); // random mode
+
+  filter.addPosition(1, 512, 'a');
+  filter.addPosition(2, 1536, 'b');
+  filter.addPosition(3, 2560, 'c');
+  filter.addPosition(4, 3584, 'd');
 
   // light sensor
   cover.triggerThreshold(2000, 100, 'k', 'l');
@@ -109,8 +126,15 @@ void loop() {
     if(bleKeyboard.isConnected()) bleKeyboard.write(filter.key());
   }
   if(volume.changed()) {
-    Serial.println("Volume changed, key: " + String(volume.key()));
-    if(bleKeyboard.isConnected()) bleKeyboard.write(volume.key());
+    Serial.print("Volume changed, key: " + String(volume.key()));
+    if(oldVolume > analogRead(13)){
+      if(bleKeyboard.isConnected()){bleKeyboard.press(KEY_MEDIA_VOLUME_DOWN); bleKeyboard.release(KEY_MEDIA_VOLUME_DOWN);};
+      Serial.println("; Volume DOWN!");
+    } else if (oldVolume < analogRead(13)){
+      if(bleKeyboard.isConnected()){bleKeyboard.press(KEY_MEDIA_VOLUME_UP); bleKeyboard.release(KEY_MEDIA_VOLUME_UP);};
+      Serial.println("; Volume UP!");
+    }
+    oldVolume = analogRead(13);
   }
   if(status.changed()) {
     Serial.println("Status changed, key: " + String(status.key()));

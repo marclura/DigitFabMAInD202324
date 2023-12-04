@@ -28,10 +28,10 @@
  *
  * Recording button: G19
  * Stop button: G5
- * Share button: G2
- * Length potentiometer: G27
+ * Share button: G16
  * Delete button: G35
- * Scroll potentiometer: G13
+ * Length potentiometer: G27
+ * Scroll potentiometer: G26
  *
  */
 
@@ -44,12 +44,12 @@ BleKeyboard bleKeyboard;
 // buttons
 FigmaButton rec(19, 'a');
 FigmaButton stop(5, 'b');
-FigmaButton share(2, 'm');
+FigmaButton share(16, 'm');
 FigmaButton del(35, 'f');
 
 // potentiometers
-FigmaPot scroll(13, 3, 200);
 FigmaPot length(27, 3, 200);
+FigmaPot scroll(26, 3, 200);
 
 // variables
 unsigned int scroll_threshold_up = 800;
